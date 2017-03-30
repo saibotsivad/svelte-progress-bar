@@ -1,0 +1,83 @@
+{{#if width}}
+<div style="{{style}}"></div>
+{{/if}}
+
+<script>
+const defaults = {
+	color: 'red',
+	minimum: 0.08,
+	maximum: 0.994,
+	speed: 200,
+	height: 2,
+	settleTime: 700,
+	intervalTime: 800,
+	stepSizes: [ 0, 0.05, 0.07, 0.1 ]
+}
+let updater
+
+export default {
+	methods: {
+		start() {
+			this.reset()
+			this.continue()
+		},
+		reset() {
+			const startingWidth = this.get('minimum') || defaults.minimum
+			this.set({ width: startingWidth })
+		},
+		continue() {
+			const maximumWidth = this.get('maximum') || defaults.maximum
+			const intervalTime = this.get('intervalTime') || defaults.intervalTime
+
+			updater = setInterval(() => {
+				const stepSizes = this.get('stepSizes') || defaults.stepSizes
+				const step = stepSizes[Math.floor(Math.random() * stepSizes.length)]
+				let value = this.get('width')
+				if (value < maximumWidth) {
+					value = value + step
+				}
+				if (value > maximumWidth) {
+					value = maximumWidth
+				}
+				this.set({ width: value })
+			}, intervalTime)
+		},
+		stop() {
+			if (updater) {
+				clearInterval(updater)
+			}
+		},
+		complete() {
+			clearInterval(updater)
+			this.set({ width: 1 })
+			const settleTime = this.get('settleTime') || defaults.settleTime
+			setTimeout(() => {
+				this.set({ width: 0 })
+			}, settleTime)
+		}
+	},
+	computed: {
+		styleMap(width, height, color) {
+			return {
+				'z-index': 1,
+				width: (width * 100) + '%',
+				height: (height || defaults.height) + 'px',
+				'background-color': color || defaults.color
+			}
+		},
+		style(styleMap) {
+			return Object.keys(styleMap)
+				.map(key => `${key}:${styleMap[key]};`)
+				.join('')
+		}
+	}
+}
+</script>
+
+<style>
+div {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+</style>
