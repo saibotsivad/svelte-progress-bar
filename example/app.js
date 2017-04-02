@@ -6,6 +6,8 @@ const progress = new ProgressBar({
 
 progress.start()
 
+// progress.set({ width: 0.5 })
+
 // setTimeout(() => {
 // 	progress.complete()
 // }, 8000)

@@ -1,22 +1,22 @@
 # svelte-progress-bar
 
 The idea is a little Svelte component that shows a cool progress bar, like
-[this sort of thing](http://ricostacruz.com/nprogress), or what's on YouTube.
+what's on YouTube, or [this cool thing](http://ricostacruz.com/nprogress).
 
 If you're using it in your JavaScript, you'd probably have something like:
 
 ```js
 const ProgressBar = require('svelte-progress-bar')
 const progress = new ProgressBar({
-	target: document.querySelector('#my-progress-bar'),
-	data: {
-		// all these properties are optional
-		color: 'green',
-		minimum: 0.3,
-		speed: 500
-	}
+	// you need to "attach" it to some element on the page
+	target: document.querySelector('#my-progress-bar')
 })
+```
 
+Then if you were using some sort of single-page app with a page/state change
+event emitter, it might look like:
+
+```js
 const router = // some sort of page/state change event emitter
 router.on('stateChangeStart', () => {
 	progress.start()
@@ -26,47 +26,48 @@ router.on('stateChangeEnd', () => {
 })
 ```
 
-You can manually set the width, or change settings on the fly:
+Or if you had some progress event emitter, set it manually with something
+like this:
 
 ```js
-// change the color
-progress.set({ color: 'green' })
-// set the width manually, if desired
-progress.set({ width: 0.8 })
-// change the CSS easing speed
-progress.set({ speed: 500 })
+const dataLoad = // some sort of data load progress event emitter
+dataLoad.on('percentDone', percent => {
+	progress.set({ width: percent })
+})
+dataLoad.on('end', () => {
+	progress.complete()
+})
 ```
 
-Or if you are using the progress bar inside a Svelte template, you can
-do it like this:
+Or if you are using the progress bar inside a Svelte template, you might
+use it like this:
 
 ```html
-<ProgressBar color="green" minimum="0.3" ref="progress" />
+<ProgressBar ref="progress" />
 
 <script>
 import ProgressBar from 'svelte-progress-bar'
 export default {
 	components: { ProgressBar }
-	// somewhere down here, maybe: this.refs.progress.start()
+	// somewhere later, use: this.refs.progress.start()
 }
 </script>
 ```
-
-You can also use an observable, e.g. `color="{{myColor}}"`, for any
-of the properties.
 
 ## options
 
 The properties available are:
 
-* `color` *(string)*: The CSS color of the progress bar. If unset, it
-	will be oncolored, and you must set it in your own CSS.
-* `minimum` *(number, range: 0-1, default: 0.08)*: The starting value to
-	use when the bar starts. Starting at `0` doesn't usually look very good.
-* `speed` *(number)*: Used in the CSS easing style. Used raw, as milliseconds.
-* `height` *(number, default: 2)*: Pixel height of the progress bar.
-* `settleTime` *(number, default: 700)*: Milliseconds to wait after complete
-	to hide the progress bar.
+* `minimum` *(number, range: 0-1, default: 0.08)*: The starting percent width
+	to use when the bar starts. Starting at `0` doesn't usually look very good.
+* `maximum` *(number, range: 0-1, default: 0.994)*: The maximum percent width
+	value to use when the bar is at the end but not marked as complete. Letting
+	the bar stay at 100% width for a while doesn't usually look very good either.
+* `intervalTime` *(number, default: 800)*: Milliseconds to wait between incrementing
+	bar width when using the `start` (auto-increment) method.
+* `settleTime` *(number, default: 700)*: Milliseconds to wait after the `complete`
+	method is called to hide the progress bar. Letting it sit at 100% width for
+	a very short time makes it feel more fluid.
 
 ## methods
 
@@ -80,4 +81,4 @@ These additional methods are available on an instantiated progress bar:
 
 ## license
 
-[VOL](veryopenlicense.com)
+Published and released under the [Very Oopen License](veryopenlicense.com).
