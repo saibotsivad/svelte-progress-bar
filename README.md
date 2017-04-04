@@ -8,7 +8,7 @@ If you're using it in your JavaScript, you'd probably have something like:
 ```js
 const ProgressBar = require('svelte-progress-bar')
 const progress = new ProgressBar({
-	// you need to "attach" it to some element on the page
+	// you need to 'attach' it to some element on the page
 	target: document.querySelector('#my-progress-bar')
 })
 ```
@@ -26,13 +26,13 @@ router.on('stateChangeEnd', () => {
 })
 ```
 
-Or if you had some progress event emitter, set it manually with something
-like this:
+Or if you had some progress event emitter, you might set it manually
+with something like this:
 
 ```js
 const dataLoad = // some sort of data load progress event emitter
 dataLoad.on('percentDone', percent => {
-	progress.set({ width: percent })
+	progress.set({ width: percent / 100 }) // must be a ratio
 })
 dataLoad.on('end', () => {
 	progress.complete()
@@ -43,13 +43,13 @@ Or if you are using the progress bar inside a Svelte template, you might
 use it like this:
 
 ```html
-<ProgressBar ref="progress" />
+<ProgressBar width="{{width}}" />
 
 <script>
 import ProgressBar from 'svelte-progress-bar'
 export default {
 	components: { ProgressBar }
-	// somewhere later, use: this.refs.progress.start()
+	// somewhere later: this.set({ width: 0.4 })
 }
 </script>
 ```
@@ -81,4 +81,4 @@ These additional methods are available on an instantiated progress bar:
 
 ## license
 
-Published and released under the [Very Oopen License](veryopenlicense.com).
+Published and released under the [Very Open License](http://veryopenlicense.com).
