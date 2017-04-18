@@ -6,12 +6,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 function recompute(state, newState, oldState, isInitial) {
 	if (isInitial || 'width' in newState && differs(state.width, oldState.width)) {
 		state.widthPercent = newState.widthPercent = template.computed.widthPercent(state.width);
+	}if (isInitial || 'completed' in newState && differs(state.completed, oldState.completed)) {
+		state.barClass = newState.barClass = template.computed.barClass(state.completed);
+	}if (isInitial || 'color' in newState && differs(state.color, oldState.color)) {
+		state.barColorStyle = newState.barColorStyle = template.computed.barColorStyle(state.color);
+		state.leaderColorStyle = newState.leaderColorStyle = template.computed.leaderColorStyle(state.color);
 	}
 }
 
 var template = function () {
-	var stepSizes = [0, 0, 0.005, 0.01, 0.02];
-
 	function getIncrement(number) {
 		if (number >= 0 && number < 0.2) return 0.1;else if (number >= 0.2 && number < 0.5) return 0.04;else if (number >= 0.5 && number < 0.8) return 0.02;else if (number >= 0.8 && number < 0.99) return 0.005;
 		return 0;
@@ -25,7 +28,8 @@ var template = function () {
 				minimum: 0.08,
 				maximum: 0.994,
 				settleTime: 700,
-				intervalTime: 700
+				intervalTime: 700,
+				stepSizes: [0, 0.005, 0.01, 0.02]
 			};
 		},
 
@@ -55,6 +59,7 @@ var template = function () {
 				updater = setInterval(function () {
 					var value = _this.get('width');
 
+					var stepSizes = _this.get('stepSizes');
 					var randomStep = stepSizes[Math.floor(Math.random() * stepSizes.length)];
 					var step = getIncrement(value) + randomStep;
 					if (value < maximumWidth) {
@@ -82,13 +87,31 @@ var template = function () {
 				});
 				var settleTime = this.get('settleTime');
 				setTimeout(function () {
-					_this2.set({ width: 0 });
+					_this2.set({
+						completed: true
+					});
+					setTimeout(function () {
+						_this2.set({
+							completed: false,
+							width: 0
+						});
+					}, settleTime);
 				}, settleTime);
 			}
 		},
 		computed: {
 			widthPercent: function widthPercent(width) {
-				return width * 100;
+				return width * 100 || undefined;
+			},
+			barClass: function barClass(completed) {
+				return completed ? 'svelte-progress-bar-hiding' : '';
+			},
+			barColorStyle: function barColorStyle(color) {
+				return color && 'background-color: ' + color + ';' || '';
+			},
+			leaderColorStyle: function leaderColorStyle(color) {
+				// the box shadow of the leader bar uses `color` to set its shadow color
+				return color && 'background-color: ' + color + '; color: ' + color + ';' || '';
 			}
 		}
 	};
@@ -97,7 +120,7 @@ var template = function () {
 var added_css = false;
 function add_css() {
 	var style = createElement('style');
-	style.textContent = "\n[svelte-678785769].svelte-progress-bar, [svelte-678785769] .svelte-progress-bar {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\theight: 2px;\n\ttransition: width 0.16s ease-in-out;\n\tbackground-color: red;\n\tz-index: 1;\n}\n[svelte-678785769].svelte-progress-bar-leader, [svelte-678785769] .svelte-progress-bar-leader {\n\tposition: absolute;\n\ttop: 0;\n\tright: 0;\n\theight: 2px;\n\twidth: 100px;\n\ttransform: rotate(2.5deg) translate(0px, -4px);\n\tbox-shadow: 0 0 8px red, 0 0 8px red;\n\tbackground-color: red;\n\tz-index: 2;\n}\n";
+	style.textContent = "\n[svelte-1593202927].svelte-progress-bar, [svelte-1593202927] .svelte-progress-bar {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\theight: 2px;\n\ttransition: width 0.16s ease-in-out;\n\tz-index: 1;\n}\n[svelte-1593202927].svelte-progress-bar-hiding, [svelte-1593202927] .svelte-progress-bar-hiding {\n\ttransition: top 0.16s ease;\n\ttop: -8px;\n}\n[svelte-1593202927].svelte-progress-bar-leader, [svelte-1593202927] .svelte-progress-bar-leader {\n\tposition: absolute;\n\ttop: 0;\n\tright: 0;\n\theight: 2px;\n\twidth: 100px;\n\ttransform: rotate(2.5deg) translate(0px, -4px);\n\tbox-shadow: 0 0 8px;\n\tz-index: 2;\n}\n";
 	appendNode(style, document.head);
 
 	added_css = true;
@@ -144,9 +167,10 @@ function create_main_fragment(root, component) {
 
 function create_if_block_0(root, component) {
 	var div = createElement('div');
-	setAttribute(div, 'svelte-678785769', '');
-	div.className = "svelte-progress-bar";
-	var last_div_style = "width: " + root.widthPercent + "%";
+	setAttribute(div, 'svelte-1593202927', '');
+	var last_div_class = "svelte-progress-bar " + root.barClass;
+	div.className = last_div_class;
+	var last_div_style = "width: " + root.widthPercent + "%; " + root.barColorStyle;
 	div.style.cssText = last_div_style;
 	var if_block_1_anchor = createComment();
 	appendNode(if_block_1_anchor, div);
@@ -169,7 +193,12 @@ function create_if_block_0(root, component) {
 		update: function update(changed, root) {
 			var tmp;
 
-			if ((tmp = "width: " + root.widthPercent + "%") !== last_div_style) {
+			if ((tmp = "svelte-progress-bar " + root.barClass) !== last_div_class) {
+				last_div_class = tmp;
+				div.className = last_div_class;
+			}
+
+			if ((tmp = "width: " + root.widthPercent + "%; " + root.barColorStyle) !== last_div_style) {
 				last_div_style = tmp;
 				div.style.cssText = last_div_style;
 			}
@@ -198,13 +227,22 @@ function create_if_block_0(root, component) {
 function create_if_block_1_0(root, component) {
 	var div = createElement('div');
 	div.className = "svelte-progress-bar-leader";
+	var last_div_style = root.leaderColorStyle;
+	div.style.cssText = last_div_style;
 
 	return {
 		mount: function mount(target, anchor) {
 			insertNode(div, target, anchor);
 		},
 
-		update: noop,
+		update: function update(changed, root) {
+			var tmp;
+
+			if ((tmp = root.leaderColorStyle) !== last_div_style) {
+				last_div_style = tmp;
+				div.style.cssText = last_div_style;
+			}
+		},
 
 		destroy: function destroy(detach) {
 			if (detach) {
@@ -326,8 +364,6 @@ function dispatchObservers(component, group, newState, oldState) {
 		}
 	}
 }
-
-function noop() {}
 
 function get(key) {
 	return key ? this._state[key] : this._state;
