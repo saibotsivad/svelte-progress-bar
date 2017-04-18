@@ -1,4 +1,4 @@
-var ProgressBar = (function () { 'use strict';
+'use strict';
 
 function recompute ( state, newState, oldState, isInitial ) {
 	if ( isInitial || ( 'width' in newState && differs( state.width, oldState.width ) ) ) {
@@ -418,6 +418,4 @@ function _flush() {
 	}
 }
 
-return ProgressBar;
-
-}());
+module.exports = ProgressBar;

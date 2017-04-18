@@ -1,5 +1,3 @@
-var ProgressBar = (function () { 'use strict';
-
 function recompute ( state, newState, oldState, isInitial ) {
 	if ( isInitial || ( 'width' in newState && differs( state.width, oldState.width ) ) ) {
 		state.widthPercent = newState.widthPercent = template.computed.widthPercent( state.width );
@@ -418,6 +416,4 @@ function _flush() {
 	}
 }
 
-return ProgressBar;
-
-}());
+export default ProgressBar;
