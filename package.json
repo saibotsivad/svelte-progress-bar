@@ -12,7 +12,7 @@
     "build:dist": "npm run build:dist:cjs && npm run build:dist:es && npm run build:dist:iife",
     "build:dist:cjs": "svelte compile --format=cjs ProgressBar.html > dist/ProgressBar.cjs.js",
     "build:dist:es": "svelte compile --format=es ProgressBar.html > dist/ProgressBar.es.js",
-    "build:dist:iife": "svelte compile --format=iife ProgressBar.html > dist/ProgressBar.js",
+    "build:dist:iife": "browserify ProgressBar.html -o dist/ProgressBar.js",
     "postbuild:dist": "uglifyjs --compress --mangle --source-map=dist/ProgressBar.min.js.map dist/ProgressBar.js > dist/ProgressBar.min.js"
   },
   "repository": {
