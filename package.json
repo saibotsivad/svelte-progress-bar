@@ -2,7 +2,7 @@
   "name": "svelte-progress-bar",
   "version": "1.0.5",
   "description": "A tiny progress bar, inspired by YouTube's loader!",
-  "main": "index.js",
+  "main": "dist/ProgressBar.js",
   "scripts": {
     "test": "browserify ProgressBar.spec.js | tape-run",
     "build": "npm run build:docs && npm run build:dist",
