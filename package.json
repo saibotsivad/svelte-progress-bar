@@ -4,8 +4,12 @@
   "description": "A tiny progress bar, inspired by YouTube's loader!",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify -t sveltify -t [ babelify --presets [ es2015 ] --extensions .js,.html ] example/app.js -d -o example/build.js"
+    "test": "browserify ProgressBar.spec.js | tape-run",
+    "build": "npm run build:docs && npm run build:dist",
+    "build:docs": "browserify docs/app.js > docs/build.js",
+    "prebuild:dist": "rm -rf dist && mkdir -p dist",
+    "build:dist": "browserify ProgressBar.html > dist/ProgressBar.js",
+    "postbuild:dist": "uglifyjs --compress --mangle --source-map=dist/ProgressBar.min.js.map dist/ProgressBar.js > dist/ProgressBar.min.js"
   },
   "repository": {
     "type": "git",
@@ -17,13 +21,35 @@
   "bugs": {
     "url": "https://github.com/saibotsivad/svelte-progress-bar/issues"
   },
+  "browserify": {
+    "transform": [
+      "sveltify",
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ],
+          "extensions": [
+            ".js",
+            ".html"
+          ]
+        }
+      ]
+    ]
+  },
   "homepage": "https://github.com/saibotsivad/svelte-progress-bar#readme",
   "devDependencies": {
-    "browserify": "^14.1.0",
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^7.3.0",
+    "browserify": "^14.3.0",
+    "delay": "^2.0.0",
     "svelte": "^1.13.2",
+    "svelte-cli": "^1.3.6",
     "sveltify": "^1.1.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-preset-es2015": "^6.24.0",
-    "babelify": "^7.3.0"
+    "tape": "^4.6.3",
+    "tape-run": "^3.0.0",
+    "uglify-js": "^2.8.22"
   }
 }

@@ -1,0 +1,43 @@
+<button on:click="progressStart()">Restart</button>
+<button on:click="progressComplete()">Complete</button>
+<button on:click="progressStop()">Stop Auto-Increment</button>
+<button on:click="progressIncrement(0.2)">Increment by 20%</button>
+<button on:click="progressContinue()">Continue Auto-Increment</button>
+<button class="inline" on:click="setWidth(width)">Set Width</button>
+<input class="inline" type="number" bind:value="width">
+
+<script>
+export default {
+	data() {
+		return {
+			width: 10
+		}
+	},
+	methods: {
+		progressStart() {
+			this.get('bar').start()
+		},
+		progressComplete() {
+			this.get('bar').complete()
+		},
+		progressStop() {
+			this.get('bar').stop()
+		},
+		progressIncrement(size) {
+			const bar = this.get('bar')
+			const max = bar.get('maximum')
+			let width = bar.get('width') + size
+			if (width > max) {
+				width = max
+			}
+			bar.set({ width })
+		},
+		progressContinue() {
+			this.get('bar').continue()
+		},
+		setWidth(width) {
+			this.get('bar').set({ width: width / 100 })
+		}
+	}
+}
+</script>

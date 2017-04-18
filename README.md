@@ -26,7 +26,8 @@ router.on('stateChangeEnd', () => {
 })
 ```
 
-Or if you had some progress event emitter, you might set it manually
+Or if you had some progress event emitter that actually told you the
+percent of progress, you might set the progress bar width manually
 with something like this:
 
 ```js
@@ -52,6 +53,53 @@ export default {
 	// somewhere later: this.set({ width: 0.4 })
 }
 </script>
+```
+
+## bar color
+
+The progress bar does not have a default color, so you
+will need to set one. You can either set the color as a
+data property or override the CSS.
+
+JavaScript:
+
+```js
+const progress = new ProgressBar({
+	target: document.querySelector('#my-progress-bar'),
+	data: { color: 'blue' }
+})
+```
+
+Svelte component:
+
+```html
+<ProgressBar width="{{width}}" color="blue" />
+```
+
+CSS:
+
+```css
+.svelte-progress-bar, .svelte-progress-bar-leader {
+	background-color: blue;
+}
+.svelte-progress-bar-leader {
+	color: blue;
+}
+```
+
+## other styles
+
+If you are using some type of navbar at the top of the page, like
+Bootstrap's, it is likely that you will need to change the z-index
+to get the progress bar to appear over the navbar:
+
+```css
+.svelte-progress-bar {
+	z-index: 100;
+}
+.svelte-progress-bar-leader {
+	z-index: 101;
+}
 ```
 
 ## options
