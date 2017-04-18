@@ -774,8 +774,7 @@ var ProgressBar = require('../ProgressBar.html');
 var bar = new ProgressBar({
 	target: document.querySelector('#progress-bar'),
 	data: {
-		// you can either specify the color as a property
-		// here, or using CSS
+		// you can either specify the color as a property here, or using CSS
 		color: 'blue'
 	}
 });
