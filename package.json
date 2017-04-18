@@ -1,6 +1,6 @@
 {
   "name": "svelte-progress-bar",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A tiny progress bar, inspired by YouTube's loader!",
   "main": "index.js",
   "scripts": {
