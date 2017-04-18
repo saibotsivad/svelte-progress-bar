@@ -1,6 +1,6 @@
 {
   "name": "svelte-progress-bar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A tiny progress bar, inspired by YouTube's loader!",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,11 @@
     "type": "git",
     "url": "git+https://github.com/saibotsivad/svelte-progress-bar.git"
   },
-  "keywords": [ "svelte", "progress", "load" ],
+  "keywords": [
+    "svelte",
+    "progress",
+    "load"
+  ],
   "author": "saibotsivad",
   "license": "VOL",
   "bugs": {
