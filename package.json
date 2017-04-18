@@ -2,13 +2,17 @@
   "name": "svelte-progress-bar",
   "version": "1.0.5",
   "description": "A tiny progress bar, inspired by YouTube's loader!",
-  "main": "dist/ProgressBar.js",
+  "main": "dist/ProgressBar.cjs.js",
+  "module": "dist/ProgressBar.js",
   "scripts": {
     "test": "browserify ProgressBar.spec.js | tape-run",
     "build": "npm run build:docs && npm run build:dist",
     "build:docs": "browserify docs/app.js > docs/build.js",
     "prebuild:dist": "rm -rf dist && mkdir -p dist",
-    "build:dist": "browserify ProgressBar.html > dist/ProgressBar.js",
+    "build:dist": "npm run build:dist:cjs && npm run build:dist:es && npm run build:dist:iife",
+    "build:dist:cjs": "svelte compile --format=cjs ProgressBar.html > dist/ProgressBar.cjs.js",
+    "build:dist:es": "svelte compile --format=es ProgressBar.html > dist/ProgressBar.es.js",
+    "build:dist:iife": "svelte compile --format=iife ProgressBar.html > dist/ProgressBar.js",
     "postbuild:dist": "uglifyjs --compress --mangle --source-map=dist/ProgressBar.min.js.map dist/ProgressBar.js > dist/ProgressBar.min.js"
   },
   "repository": {
