@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/saibotsivad/svelte-progress-bar.git"
   },
-  "keywords": [],
+  "keywords": [ "svelte", "progress", "load" ],
   "author": "saibotsivad",
   "license": "VOL",
   "bugs": {
