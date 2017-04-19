@@ -3,22 +3,34 @@
 The idea is a little Svelte component that shows a cool progress bar, like
 what's on YouTube, or [this cool thing](http://ricostacruz.com/nprogress).
 
-If you're using it in your JavaScript, you'd probably have something like:
+You can use it in your plain old web app like this:
+
+```html
+<script src="ProgressBar.min.js"></script>
+<script>
+const progress = new ProgressBar({
+	target: document.querySelector('body')
+})
+</script>
+```
+
+Or to include it in your built web app:
 
 ```js
+import ProgressBar from 'svelte-progress-bar'
+// or
 const ProgressBar = require('svelte-progress-bar')
+// then
 const progress = new ProgressBar({
-	// you need to 'attach' it to some element on the
-	// page, but you can just attach it to <body>
 	target: document.querySelector('body')
 })
 ```
 
-Then if you were using some sort of single-page app with a page/state change
-event emitter, it might look like:
+If you were using a web app with a page change event
+emitter, it might look like:
 
 ```js
-const router = // some sort of page/state change event emitter
+const router = // the page/state change event emitter
 router.on('stateChangeStart', () => {
 	progress.start()
 })
