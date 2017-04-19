@@ -1,6 +1,6 @@
 {
   "name": "svelte-progress-bar",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A tiny progress bar, inspired by YouTube's loader!",
   "main": "dist/ProgressBar.cjs.js",
   "module": "dist/ProgressBar.js",
