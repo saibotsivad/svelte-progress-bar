@@ -8,8 +8,9 @@ If you're using it in your JavaScript, you'd probably have something like:
 ```js
 const ProgressBar = require('svelte-progress-bar')
 const progress = new ProgressBar({
-	// you need to 'attach' it to some element on the page
-	target: document.querySelector('#my-progress-bar')
+	// you need to 'attach' it to some element on the
+	// page, but you can just attach it to <body>
+	target: document.querySelector('body')
 })
 ```
 
@@ -65,7 +66,7 @@ JavaScript:
 
 ```js
 const progress = new ProgressBar({
-	target: document.querySelector('#my-progress-bar'),
+	target: document.querySelector('body'),
 	data: { color: 'blue' }
 })
 ```
