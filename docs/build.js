@@ -779,6 +779,8 @@ var bar = new ProgressBar({
 	}
 });
 
+// wire up the control buttons
+
 new Controls({
 	target: document.querySelector('#controls'),
 	data: { bar: bar }
