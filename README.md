@@ -3,7 +3,7 @@
 The idea is a little Svelte component that shows a cool progress bar, like
 what's on YouTube, or [this cool thing](http://ricostacruz.com/nprogress).
 
-You can use it in your plain old web app like this:
+You can use it in your plain old web app, without bundling it, like this:
 
 ```html
 <script src="ProgressBar.min.js"></script>
@@ -14,7 +14,7 @@ const progress = new ProgressBar({
 </script>
 ```
 
-Or to include it in your built web app:
+Or to include it in your bundled web app:
 
 ```js
 import ProgressBar from 'svelte-progress-bar'
@@ -46,7 +46,7 @@ with something like this:
 ```js
 const dataLoad = // some sort of data load progress event emitter
 dataLoad.on('percentDone', percent => {
-	progress.set({ width: percent / 100 }) // must be a ratio
+	progress.setWidthRatio(percent / 100) // must be a ratio
 })
 dataLoad.on('end', () => {
 	progress.complete()
@@ -57,20 +57,20 @@ Or if you are using the progress bar inside a Svelte template, you might
 use it like this:
 
 ```html
-<ProgressBar width="{{width}}" />
+<ProgressBar width="{width}" />
 
 <script>
 import ProgressBar from 'svelte-progress-bar'
 export default {
 	components: { ProgressBar }
-	// somewhere later: this.set({ width: 0.4 })
+	// somewhere later: this.setWidthRatio(0.4)
 }
 </script>
 ```
 
 ## bar color
 
-The progress bar does not have a default color, so you
+The progress bar does **not** have a default color, so you
 will need to set one. You can either set the color as a
 data property or override the CSS.
 
@@ -79,24 +79,24 @@ JavaScript:
 ```js
 const progress = new ProgressBar({
 	target: document.querySelector('body'),
-	data: { color: 'blue' }
+	data: { color: '#0366d6' }
 })
 ```
 
 Svelte component:
 
 ```html
-<ProgressBar width="{{width}}" color="blue" />
+<ProgressBar width="{{width}}" color="#0366d6" />
 ```
 
 CSS:
 
 ```css
 .svelte-progress-bar, .svelte-progress-bar-leader {
-	background-color: blue;
+	background-color: #0366d6;
 }
 .svelte-progress-bar-leader {
-	color: blue;
+	color: #0366d6;
 }
 ```
 
@@ -139,6 +139,7 @@ These additional methods are available on an instantiated progress bar:
 * `reset()`: Set the width to minimum but do not start incrementing.
 * `continue()`: Start incrementing from whatever the current width is.
 * `stop()`: Stop incrementing and take no further action.
+* `setWidthRatio(ratio: number)`: Stop auto-incrementing and manually specify the width.
 
 ## license
 

@@ -1,13 +1,13 @@
-{{#if width && widthPercent}}
-<div class="svelte-progress-bar {{barClass}}" style="width: {{widthPercent}}%; {{barColorStyle}}">
-	{{#if running}}
-	<div class="svelte-progress-bar-leader" style="{{leaderColorStyle}}"></div>
-	{{/if}}
+{#if width}
+<div class="svelte-progress-bar {barClass}" style="{barStyle}">
+	{#if running}
+	<div class="svelte-progress-bar-leader" style="{leaderColorStyle}"></div>
+	{/if}
 </div>
-{{/if}}
+{/if}
 
 <script>
-function getIncrement(number) {
+const getIncrement = number => {
 	if (number >= 0 && number < 0.2) return 0.1
 	else if (number >= 0.2 && number < 0.5) return 0.04
 	else if (number >= 0.5 && number < 0.8) return 0.02
@@ -33,15 +33,15 @@ export default {
 			this.continue()
 		},
 		reset() {
-			const startingWidth = this.get('minimum')
+			const startingWidth = this.get().minimum
 			this.set({
 				width: startingWidth,
 				running: true
 			})
 		},
 		continue() {
-			const maximumWidth = this.get('maximum')
-			const intervalTime = this.get('intervalTime')
+			const maximumWidth = this.get().maximum
+			const intervalTime = this.get().intervalTime
 
 			if (updater) {
 				// prevent multiple intervals by clearing before making
@@ -49,9 +49,9 @@ export default {
 			}
 			this.set({ running: true })
 			updater = setInterval(() => {
-				let value = this.get('width')
+				let value = this.get().width
 
-				const stepSizes = this.get('stepSizes')
+				const stepSizes = this.get().stepSizes
 				const randomStep = stepSizes[Math.floor(Math.random() * stepSizes.length)]
 				const step = getIncrement(value) + randomStep
 				if (value < maximumWidth) {
@@ -75,7 +75,7 @@ export default {
 				width: 1,
 				running: false
 			})
-			const settleTime = this.get('settleTime')
+			const settleTime = this.get().settleTime
 			setTimeout(() => {
 				this.set({
 					completed: true
@@ -87,19 +87,26 @@ export default {
 					})
 				}, settleTime)
 			}, settleTime)
+		},
+		setWidthRatio(widthRatio) {
+			this.stop()
+			this.set({
+				width: widthRatio,
+				completed: false,
+				running: true
+			})
 		}
 	},
 	computed: {
-		widthPercent(width) {
-			return width * 100 || undefined
-		},
-		barClass(completed) {
+		barClass({ completed }) {
 			return completed ? 'svelte-progress-bar-hiding' : ''
 		},
-		barColorStyle(color) {
-			return color && `background-color: ${color};` || ''
+		barStyle({ width, color }) {
+			const barColorStyle = color && `background-color: ${color};` || ''
+			const barWidth = width && width * 100 && `width: ${width * 100}%;` || ''
+			return [ barColorStyle, barWidth ].filter(Boolean).join('')
 		},
-		leaderColorStyle(color) {
+		leaderColorStyle({ color }) {
 			// the box shadow of the leader bar uses `color` to set its shadow color
 			return color && `background-color: ${color}; color: ${color};` || ''
 		}

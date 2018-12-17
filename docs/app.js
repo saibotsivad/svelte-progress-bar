@@ -1,5 +1,5 @@
-const Controls = require('./Controls.html')
-const ProgressBar = require('../ProgressBar.html')
+import Controls from './Controls.html'
+import ProgressBar from '../ProgressBar.html'
 
 const bar = new ProgressBar({
 	target: document.querySelector('body'),
