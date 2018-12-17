@@ -1,430 +1,461 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-'use strict';
+"use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function recompute(state, newState, oldState, isInitial) {
-	if (isInitial || 'width' in newState && differs(state.width, oldState.width)) {
-		state.widthPercent = newState.widthPercent = template.computed.widthPercent(state.width);
-	}if (isInitial || 'completed' in newState && differs(state.completed, oldState.completed)) {
-		state.barClass = newState.barClass = template.computed.barClass(state.completed);
-	}if (isInitial || 'color' in newState && differs(state.color, oldState.color)) {
-		state.barColorStyle = newState.barColorStyle = template.computed.barColorStyle(state.color);
-		state.leaderColorStyle = newState.leaderColorStyle = template.computed.leaderColorStyle(state.color);
-	}
-}
+var ProgressBar = function () {
+  'use strict';
 
-var template = function () {
-	function getIncrement(number) {
-		if (number >= 0 && number < 0.2) return 0.1;else if (number >= 0.2 && number < 0.5) return 0.04;else if (number >= 0.5 && number < 0.8) return 0.02;else if (number >= 0.8 && number < 0.99) return 0.005;
-		return 0;
-	}
+  function noop() {}
 
-	var updater = void 0;
+  function assign(tar, src) {
+    for (var k in src) {
+      tar[k] = src[k];
+    }
 
-	return {
-		data: function data() {
-			return {
-				minimum: 0.08,
-				maximum: 0.994,
-				settleTime: 700,
-				intervalTime: 700,
-				stepSizes: [0, 0.005, 0.01, 0.02]
-			};
-		},
+    return tar;
+  }
 
-		methods: {
-			start: function start() {
-				this.reset();
-				this.continue();
-			},
-			reset: function reset() {
-				var startingWidth = this.get('minimum');
-				this.set({
-					width: startingWidth,
-					running: true
-				});
-			},
-			continue: function _continue() {
-				var _this = this;
+  function append(target, node) {
+    target.appendChild(node);
+  }
 
-				var maximumWidth = this.get('maximum');
-				var intervalTime = this.get('intervalTime');
+  function insert(target, node, anchor) {
+    target.insertBefore(node, anchor);
+  }
 
-				if (updater) {
-					// prevent multiple intervals by clearing before making
-					clearInterval(updater);
-				}
-				this.set({ running: true });
-				updater = setInterval(function () {
-					var value = _this.get('width');
+  function detachNode(node) {
+    node.parentNode.removeChild(node);
+  }
 
-					var stepSizes = _this.get('stepSizes');
-					var randomStep = stepSizes[Math.floor(Math.random() * stepSizes.length)];
-					var step = getIncrement(value) + randomStep;
-					if (value < maximumWidth) {
-						value = value + step;
-					}
-					if (value > maximumWidth) {
-						value = maximumWidth;
-						_this.stop();
-					}
-					_this.set({ width: value });
-				}, intervalTime);
-			},
-			stop: function stop() {
-				if (updater) {
-					clearInterval(updater);
-				}
-			},
-			complete: function complete() {
-				var _this2 = this;
+  function createElement(name) {
+    return document.createElement(name);
+  }
 
-				clearInterval(updater);
-				this.set({
-					width: 1,
-					running: false
-				});
-				var settleTime = this.get('settleTime');
-				setTimeout(function () {
-					_this2.set({
-						completed: true
-					});
-					setTimeout(function () {
-						_this2.set({
-							completed: false,
-							width: 0
-						});
-					}, settleTime);
-				}, settleTime);
-			}
-		},
-		computed: {
-			widthPercent: function widthPercent(width) {
-				return width * 100 || undefined;
-			},
-			barClass: function barClass(completed) {
-				return completed ? 'svelte-progress-bar-hiding' : '';
-			},
-			barColorStyle: function barColorStyle(color) {
-				return color && 'background-color: ' + color + ';' || '';
-			},
-			leaderColorStyle: function leaderColorStyle(color) {
-				// the box shadow of the leader bar uses `color` to set its shadow color
-				return color && 'background-color: ' + color + '; color: ' + color + ';' || '';
-			}
-		}
-	};
+  function createComment() {
+    return document.createComment('');
+  }
+
+  function blankObject() {
+    return Object.create(null);
+  }
+
+  function destroy(detach) {
+    this.destroy = noop;
+    this.fire('destroy');
+    this.set = noop;
+
+    this._fragment.d(detach !== false);
+
+    this._fragment = null;
+    this._state = {};
+  }
+
+  function _differs(a, b) {
+    return a != a ? b == b : a !== b || a && _typeof(a) === 'object' || typeof a === 'function';
+  }
+
+  function fire(eventName, data) {
+    var handlers = eventName in this._handlers && this._handlers[eventName].slice();
+
+    if (!handlers) return;
+
+    for (var i = 0; i < handlers.length; i += 1) {
+      var handler = handlers[i];
+
+      if (!handler.__calling) {
+        try {
+          handler.__calling = true;
+          handler.call(this, data);
+        } finally {
+          handler.__calling = false;
+        }
+      }
+    }
+  }
+
+  function flush(component) {
+    component._lock = true;
+    callAll(component._beforecreate);
+    callAll(component._oncreate);
+    callAll(component._aftercreate);
+    component._lock = false;
+  }
+
+  function get() {
+    return this._state;
+  }
+
+  function init(component, options) {
+    component._handlers = blankObject();
+    component._slots = blankObject();
+    component._bind = options._bind;
+    component._staged = {};
+    component.options = options;
+    component.root = options.root || component;
+    component.store = options.store || component.root.store;
+
+    if (!options.root) {
+      component._beforecreate = [];
+      component._oncreate = [];
+      component._aftercreate = [];
+    }
+  }
+
+  function on(eventName, handler) {
+    var handlers = this._handlers[eventName] || (this._handlers[eventName] = []);
+    handlers.push(handler);
+    return {
+      cancel: function cancel() {
+        var index = handlers.indexOf(handler);
+        if (~index) handlers.splice(index, 1);
+      }
+    };
+  }
+
+  function set(newState) {
+    this._set(assign({}, newState));
+
+    if (this.root._lock) return;
+    flush(this.root);
+  }
+
+  function _set(newState) {
+    var oldState = this._state,
+        changed = {},
+        dirty = false;
+    newState = assign(this._staged, newState);
+    this._staged = {};
+
+    for (var key in newState) {
+      if (this._differs(newState[key], oldState[key])) changed[key] = dirty = true;
+    }
+
+    if (!dirty) return;
+    this._state = assign(assign({}, oldState), newState);
+
+    this._recompute(changed, this._state);
+
+    if (this._bind) this._bind(changed, this._state);
+
+    if (this._fragment) {
+      this.fire("state", {
+        changed: changed,
+        current: this._state,
+        previous: oldState
+      });
+
+      this._fragment.p(changed, this._state);
+
+      this.fire("update", {
+        changed: changed,
+        current: this._state,
+        previous: oldState
+      });
+    }
+  }
+
+  function _stage(newState) {
+    assign(this._staged, newState);
+  }
+
+  function callAll(fns) {
+    while (fns && fns.length) {
+      fns.shift()();
+    }
+  }
+
+  function _mount(target, anchor) {
+    this._fragment[this._fragment.i ? 'i' : 'm'](target, anchor || null);
+  }
+
+  var proto = {
+    destroy: destroy,
+    get: get,
+    fire: fire,
+    on: on,
+    set: set,
+    _recompute: noop,
+    _set: _set,
+    _stage: _stage,
+    _mount: _mount,
+    _differs: _differs
+  };
+  /* ProgressBar.html generated by Svelte v2.15.3 */
+
+  var getIncrement = function getIncrement(number) {
+    if (number >= 0 && number < 0.2) return 0.1;else if (number >= 0.2 && number < 0.5) return 0.04;else if (number >= 0.5 && number < 0.8) return 0.02;else if (number >= 0.8 && number < 0.99) return 0.005;
+    return 0;
+  };
+
+  var updater;
+
+  function barClass(_ref) {
+    var completed = _ref.completed;
+    return completed ? 'svelte-progress-bar-hiding' : '';
+  }
+
+  function barStyle(_ref2) {
+    var width = _ref2.width,
+        color = _ref2.color;
+    var barColorStyle = color && "background-color: ".concat(color, ";") || '';
+    var barWidth = width && width * 100 && "width: ".concat(width * 100, "%;") || '';
+    return [barColorStyle, barWidth].filter(Boolean).join('');
+  }
+
+  function leaderColorStyle(_ref3) {
+    var color = _ref3.color;
+    // the box shadow of the leader bar uses `color` to set its shadow color
+    return color && "background-color: ".concat(color, "; color: ").concat(color, ";") || '';
+  }
+
+  function data() {
+    return {
+      minimum: 0.08,
+      maximum: 0.994,
+      settleTime: 700,
+      intervalTime: 700,
+      stepSizes: [0, 0.005, 0.01, 0.02]
+    };
+  }
+
+  var methods = {
+    start: function start() {
+      this.reset();
+      this.continue();
+    },
+    reset: function reset() {
+      var startingWidth = this.get().minimum;
+      this.set({
+        width: startingWidth,
+        running: true
+      });
+    },
+    continue: function _continue() {
+      var _this = this;
+
+      var maximumWidth = this.get().maximum;
+      var intervalTime = this.get().intervalTime;
+
+      if (updater) {
+        // prevent multiple intervals by clearing before making
+        clearInterval(updater);
+      }
+
+      this.set({
+        running: true
+      });
+      updater = setInterval(function () {
+        var value = _this.get().width;
+
+        var stepSizes = _this.get().stepSizes;
+
+        var randomStep = stepSizes[Math.floor(Math.random() * stepSizes.length)];
+        var step = getIncrement(value) + randomStep;
+
+        if (value < maximumWidth) {
+          value = value + step;
+        }
+
+        if (value > maximumWidth) {
+          value = maximumWidth;
+
+          _this.stop();
+        }
+
+        _this.set({
+          width: value
+        });
+      }, intervalTime);
+    },
+    stop: function stop() {
+      if (updater) {
+        clearInterval(updater);
+      }
+    },
+    complete: function complete() {
+      var _this2 = this;
+
+      clearInterval(updater);
+      this.set({
+        width: 1,
+        running: false
+      });
+      var settleTime = this.get().settleTime;
+      setTimeout(function () {
+        _this2.set({
+          completed: true
+        });
+
+        setTimeout(function () {
+          _this2.set({
+            completed: false,
+            width: 0
+          });
+        }, settleTime);
+      }, settleTime);
+    },
+    setWidthRatio: function setWidthRatio(widthRatio) {
+      this.stop();
+      this.set({
+        width: widthRatio,
+        completed: false,
+        running: true
+      });
+    }
+  };
+
+  function add_css() {
+    var style = createElement("style");
+    style.id = 'svelte-1fsw3ov-style';
+    style.textContent = ".svelte-progress-bar.svelte-1fsw3ov{position:fixed;top:0;left:0;height:2px;transition:width 0.16s ease-in-out;z-index:1}.svelte-progress-bar-hiding.svelte-1fsw3ov{transition:top 0.16s ease;top:-8px}.svelte-progress-bar-leader.svelte-1fsw3ov{position:absolute;top:0;right:0;height:2px;width:100px;transform:rotate(2.5deg) translate(0px, -4px);box-shadow:0 0 8px;z-index:2}";
+    append(document.head, style);
+  }
+
+  function create_main_fragment(component, ctx) {
+    var if_block_anchor;
+    var if_block = ctx.width && create_if_block(component, ctx);
+    return {
+      c: function c() {
+        if (if_block) if_block.c();
+        if_block_anchor = createComment();
+      },
+      m: function m(target, anchor) {
+        if (if_block) if_block.m(target, anchor);
+        insert(target, if_block_anchor, anchor);
+      },
+      p: function p(changed, ctx) {
+        if (ctx.width) {
+          if (if_block) {
+            if_block.p(changed, ctx);
+          } else {
+            if_block = create_if_block(component, ctx);
+            if_block.c();
+            if_block.m(if_block_anchor.parentNode, if_block_anchor);
+          }
+        } else if (if_block) {
+          if_block.d(1);
+          if_block = null;
+        }
+      },
+      d: function d(detach) {
+        if (if_block) if_block.d(detach);
+
+        if (detach) {
+          detachNode(if_block_anchor);
+        }
+      }
+    };
+  } // (1:0) {#if width}
+
+
+  function create_if_block(component, ctx) {
+    var div, div_class_value;
+    var if_block = ctx.running && create_if_block_1(component, ctx);
+    return {
+      c: function c() {
+        div = createElement("div");
+        if (if_block) if_block.c();
+        div.className = div_class_value = "svelte-progress-bar " + ctx.barClass + " svelte-1fsw3ov";
+        div.style.cssText = ctx.barStyle;
+      },
+      m: function m(target, anchor) {
+        insert(target, div, anchor);
+        if (if_block) if_block.m(div, null);
+      },
+      p: function p(changed, ctx) {
+        if (ctx.running) {
+          if (if_block) {
+            if_block.p(changed, ctx);
+          } else {
+            if_block = create_if_block_1(component, ctx);
+            if_block.c();
+            if_block.m(div, null);
+          }
+        } else if (if_block) {
+          if_block.d(1);
+          if_block = null;
+        }
+
+        if (changed.barClass && div_class_value !== (div_class_value = "svelte-progress-bar " + ctx.barClass + " svelte-1fsw3ov")) {
+          div.className = div_class_value;
+        }
+
+        if (changed.barStyle) {
+          div.style.cssText = ctx.barStyle;
+        }
+      },
+      d: function d(detach) {
+        if (detach) {
+          detachNode(div);
+        }
+
+        if (if_block) if_block.d();
+      }
+    };
+  } // (3:1) {#if running}
+
+
+  function create_if_block_1(component, ctx) {
+    var div;
+    return {
+      c: function c() {
+        div = createElement("div");
+        div.className = "svelte-progress-bar-leader svelte-1fsw3ov";
+        div.style.cssText = ctx.leaderColorStyle;
+      },
+      m: function m(target, anchor) {
+        insert(target, div, anchor);
+      },
+      p: function p(changed, ctx) {
+        if (changed.leaderColorStyle) {
+          div.style.cssText = ctx.leaderColorStyle;
+        }
+      },
+      d: function d(detach) {
+        if (detach) {
+          detachNode(div);
+        }
+      }
+    };
+  }
+
+  function ProgressBar(options) {
+    init(this, options);
+    this._state = assign(data(), options.data);
+
+    this._recompute({
+      completed: 1,
+      width: 1,
+      color: 1
+    }, this._state);
+
+    this._intro = true;
+    if (!document.getElementById("svelte-1fsw3ov-style")) add_css();
+    this._fragment = create_main_fragment(this, this._state);
+
+    if (options.target) {
+      this._fragment.c();
+
+      this._mount(options.target, options.anchor);
+    }
+  }
+
+  assign(ProgressBar.prototype, proto);
+  assign(ProgressBar.prototype, methods);
+
+  ProgressBar.prototype._recompute = function _recompute(changed, state) {
+    if (changed.completed) {
+      if (this._differs(state.barClass, state.barClass = barClass(state))) changed.barClass = true;
+    }
+
+    if (changed.width || changed.color) {
+      if (this._differs(state.barStyle, state.barStyle = barStyle(state))) changed.barStyle = true;
+    }
+
+    if (changed.color) {
+      if (this._differs(state.leaderColorStyle, state.leaderColorStyle = leaderColorStyle(state))) changed.leaderColorStyle = true;
+    }
+  };
+
+  return ProgressBar;
 }();
-
-var added_css = false;
-function add_css() {
-	var style = createElement('style');
-	style.textContent = "\n[svelte-1593202927].svelte-progress-bar, [svelte-1593202927] .svelte-progress-bar {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\theight: 2px;\n\ttransition: width 0.16s ease-in-out;\n\tz-index: 1;\n}\n[svelte-1593202927].svelte-progress-bar-hiding, [svelte-1593202927] .svelte-progress-bar-hiding {\n\ttransition: top 0.16s ease;\n\ttop: -8px;\n}\n[svelte-1593202927].svelte-progress-bar-leader, [svelte-1593202927] .svelte-progress-bar-leader {\n\tposition: absolute;\n\ttop: 0;\n\tright: 0;\n\theight: 2px;\n\twidth: 100px;\n\ttransform: rotate(2.5deg) translate(0px, -4px);\n\tbox-shadow: 0 0 8px;\n\tz-index: 2;\n}\n";
-	appendNode(style, document.head);
-
-	added_css = true;
-}
-
-function create_main_fragment(root, component) {
-	var if_block_anchor = createComment();
-
-	function get_block(root) {
-		if (root.width && root.widthPercent) return create_if_block_0;
-		return null;
-	}
-
-	var current_block = get_block(root);
-	var if_block = current_block && current_block(root, component);
-
-	return {
-		mount: function mount(target, anchor) {
-			insertNode(if_block_anchor, target, anchor);
-			if (if_block) if_block.mount(if_block_anchor.parentNode, if_block_anchor);
-		},
-
-		update: function update(changed, root) {
-			var _current_block = current_block;
-			current_block = get_block(root);
-			if (_current_block === current_block && if_block) {
-				if_block.update(changed, root);
-			} else {
-				if (if_block) if_block.destroy(true);
-				if_block = current_block && current_block(root, component);
-				if (if_block) if_block.mount(if_block_anchor.parentNode, if_block_anchor);
-			}
-		},
-
-		destroy: function destroy(detach) {
-			if (if_block) if_block.destroy(detach);
-
-			if (detach) {
-				detachNode(if_block_anchor);
-			}
-		}
-	};
-}
-
-function create_if_block_0(root, component) {
-	var div = createElement('div');
-	setAttribute(div, 'svelte-1593202927', '');
-	var last_div_class = "svelte-progress-bar " + root.barClass;
-	div.className = last_div_class;
-	var last_div_style = "width: " + root.widthPercent + "%; " + root.barColorStyle;
-	div.style.cssText = last_div_style;
-	var if_block_1_anchor = createComment();
-	appendNode(if_block_1_anchor, div);
-
-	function get_block(root) {
-		if (root.running) return create_if_block_1_0;
-		return null;
-	}
-
-	var current_block = get_block(root);
-	var if_block_1 = current_block && current_block(root, component);
-
-	if (if_block_1) if_block_1.mount(if_block_1_anchor.parentNode, if_block_1_anchor);
-
-	return {
-		mount: function mount(target, anchor) {
-			insertNode(div, target, anchor);
-		},
-
-		update: function update(changed, root) {
-			var tmp;
-
-			if ((tmp = "svelte-progress-bar " + root.barClass) !== last_div_class) {
-				last_div_class = tmp;
-				div.className = last_div_class;
-			}
-
-			if ((tmp = "width: " + root.widthPercent + "%; " + root.barColorStyle) !== last_div_style) {
-				last_div_style = tmp;
-				div.style.cssText = last_div_style;
-			}
-
-			var _current_block = current_block;
-			current_block = get_block(root);
-			if (_current_block === current_block && if_block_1) {
-				if_block_1.update(changed, root);
-			} else {
-				if (if_block_1) if_block_1.destroy(true);
-				if_block_1 = current_block && current_block(root, component);
-				if (if_block_1) if_block_1.mount(if_block_1_anchor.parentNode, if_block_1_anchor);
-			}
-		},
-
-		destroy: function destroy(detach) {
-			if (if_block_1) if_block_1.destroy(false);
-
-			if (detach) {
-				detachNode(div);
-			}
-		}
-	};
-}
-
-function create_if_block_1_0(root, component) {
-	var div = createElement('div');
-	div.className = "svelte-progress-bar-leader";
-	var last_div_style = root.leaderColorStyle;
-	div.style.cssText = last_div_style;
-
-	return {
-		mount: function mount(target, anchor) {
-			insertNode(div, target, anchor);
-		},
-
-		update: function update(changed, root) {
-			var tmp;
-
-			if ((tmp = root.leaderColorStyle) !== last_div_style) {
-				last_div_style = tmp;
-				div.style.cssText = last_div_style;
-			}
-		},
-
-		destroy: function destroy(detach) {
-			if (detach) {
-				detachNode(div);
-			}
-		}
-	};
-}
-
-function ProgressBar(options) {
-	options = options || {};
-	this._state = assign(template.data(), options.data);
-	recompute(this._state, this._state, {}, true);
-
-	this._observers = {
-		pre: Object.create(null),
-		post: Object.create(null)
-	};
-
-	this._handlers = Object.create(null);
-
-	this._root = options._root;
-	this._yield = options._yield;
-
-	this._torndown = false;
-	if (!added_css) add_css();
-
-	this._fragment = create_main_fragment(this._state, this);
-	if (options.target) this._fragment.mount(options.target, null);
-}
-
-assign(ProgressBar.prototype, template.methods, {
-	get: get,
-	fire: fire,
-	observe: observe,
-	on: on,
-	set: set,
-	_flush: _flush
-});
-
-ProgressBar.prototype._set = function _set(newState) {
-	var oldState = this._state;
-	this._state = assign({}, oldState, newState);
-	recompute(this._state, newState, oldState, false);
-
-	dispatchObservers(this, this._observers.pre, newState, oldState);
-	if (this._fragment) this._fragment.update(newState, this._state);
-	dispatchObservers(this, this._observers.post, newState, oldState);
-};
-
-ProgressBar.prototype.teardown = ProgressBar.prototype.destroy = function destroy(detach) {
-	this.fire('destroy');
-
-	this._fragment.destroy(detach !== false);
-	this._fragment = null;
-
-	this._state = {};
-	this._torndown = true;
-};
-
-function createElement(name) {
-	return document.createElement(name);
-}
-
-function insertNode(node, target, anchor) {
-	target.insertBefore(node, anchor);
-}
-
-function detachNode(node) {
-	node.parentNode.removeChild(node);
-}
-
-function setAttribute(node, attribute, value) {
-	node.setAttribute(attribute, value);
-}
-
-function createComment() {
-	return document.createComment('');
-}
-
-function appendNode(node, target) {
-	target.appendChild(node);
-}
-
-function assign(target) {
-	for (var i = 1; i < arguments.length; i += 1) {
-		var source = arguments[i];
-		for (var k in source) {
-			target[k] = source[k];
-		}
-	}
-
-	return target;
-}
-
-function differs(a, b) {
-	return a !== b || a && (typeof a === 'undefined' ? 'undefined' : _typeof(a)) === 'object' || typeof a === 'function';
-}
-
-function dispatchObservers(component, group, newState, oldState) {
-	for (var key in group) {
-		if (!(key in newState)) continue;
-
-		var newValue = newState[key];
-		var oldValue = oldState[key];
-
-		if (newValue === oldValue && (typeof newValue === 'undefined' ? 'undefined' : _typeof(newValue)) !== 'object') continue;
-
-		var callbacks = group[key];
-		if (!callbacks) continue;
-
-		for (var i = 0; i < callbacks.length; i += 1) {
-			var callback = callbacks[i];
-			if (callback.__calling) continue;
-
-			callback.__calling = true;
-			callback.call(component, newValue, oldValue);
-			callback.__calling = false;
-		}
-	}
-}
-
-function get(key) {
-	return key ? this._state[key] : this._state;
-}
-
-function fire(eventName, data) {
-	var handlers = eventName in this._handlers && this._handlers[eventName].slice();
-	if (!handlers) return;
-
-	for (var i = 0; i < handlers.length; i += 1) {
-		handlers[i].call(this, data);
-	}
-}
-
-function observe(key, callback, options) {
-	var group = options && options.defer ? this._observers.post : this._observers.pre;
-
-	(group[key] || (group[key] = [])).push(callback);
-
-	if (!options || options.init !== false) {
-		callback.__calling = true;
-		callback.call(this, this._state[key]);
-		callback.__calling = false;
-	}
-
-	return {
-		cancel: function cancel() {
-			var index = group[key].indexOf(callback);
-			if (~index) group[key].splice(index, 1);
-		}
-	};
-}
-
-function on(eventName, handler) {
-	if (eventName === 'teardown') return this.on('destroy', handler);
-
-	var handlers = this._handlers[eventName] || (this._handlers[eventName] = []);
-	handlers.push(handler);
-
-	return {
-		cancel: function cancel() {
-			var index = handlers.indexOf(handler);
-			if (~index) handlers.splice(index, 1);
-		}
-	};
-}
-
-function set(newState) {
-	this._set(newState);
-	(this._root || this)._flush();
-}
-
-function _flush() {
-	if (!this._renderHooks) return;
-
-	while (this._renderHooks.length) {
-		var hook = this._renderHooks.pop();
-		hook.fn.call(hook.context);
-	}
-}
-
-module.exports = ProgressBar;
-
-},{}]},{},[1]);
