@@ -1,0 +1,121 @@
+{
+	"env": {
+		"es6": true,
+		"browser": true,
+		"node": true
+	},
+	"parserOptions": {
+		"ecmaVersion": 2021,
+		"sourceType": "module"
+	},
+	"globals": {
+		// eslint doesn't support Node16 yet? https://github.com/eslint/eslint/issues/11524
+		"BigInt": true
+	},
+	"extends": "eslint:recommended",
+	"rules": {
+		"array-bracket-spacing": [
+			"error",
+			"always",
+			{
+				"objectsInArrays": false,
+				"arraysInArrays": false
+			}
+		],
+		"no-irregular-whitespace": [
+			"error",
+			{
+				"skipStrings": false
+			}
+		],
+		"comma-dangle": [
+			"error",
+			"always-multiline"
+		],
+		"eqeqeq": [
+			"error",
+			"always"
+		],
+		"no-undef": [
+			"error"
+		],
+		"indent": [
+			"error",
+			"tab"
+		],
+		"linebreak-style": [
+			"error",
+			"unix"
+		],
+		"eol-last": [
+			"error",
+			"always"
+		],
+		"block-spacing": [
+			"error",
+			"always"
+		],
+		"no-return-await": "error",
+		"no-useless-rename": "error",
+		"object-curly-spacing": [
+			"error",
+			"always"
+		],
+		"semi": [
+			"error",
+			"never"
+		],
+		"keyword-spacing": [
+			"error",
+			{
+				"before": true
+			}
+		],
+		"space-before-blocks": [
+			"error",
+			"always"
+		],
+		"space-before-function-paren": [
+			"error",
+			{
+				"anonymous": "always",
+				"named": "never",
+				"asyncArrow": "always"
+			}
+		],
+		"space-in-parens": [
+			"error",
+			"never"
+		],
+		"no-eval": "error",
+		"no-implied-eval": "error",
+		"no-new": "error",
+		"no-unexpected-multiline": "error",
+		"no-unused-vars": [
+			"error"
+		],
+		"no-var": [
+			"error"
+		],
+		"brace-style": [
+			"error",
+			"1tbs",
+			{
+				"allowSingleLine": true
+			}
+		],
+		"key-spacing": [
+			"error",
+			{
+				"beforeColon": false,
+				"afterColon": true
+			}
+		],
+		"valid-jsdoc": [
+			"error",
+			{
+				"requireReturn": false
+			}
+		]
+	}
+}
