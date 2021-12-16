@@ -5,7 +5,7 @@ The idea is a little Svelte component (check out [the demo](https://saibotsivad.
 You can use it in your plain old web app, without bundling or anything, using the [unpkg CDN](https://unpkg.com/):
 
 ```html
-<script src="https://unpkg.com/svelte-progress-bar/dist/ProgressBar.min.js"></script>
+<script src="https://unpkg.com/svelte-progress-bar/dist/ProgressBar.umd.js"></script>
 <script>
 	const progress = new ProgressBar({
 		target: document.querySelector('body')
