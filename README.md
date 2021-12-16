@@ -25,23 +25,18 @@ const progress = new ProgressBar({
 })
 ```
 
-Or if you are using the progress bar inside a Svelte template, you might use it like this:
+Or if you are using the progress bar inside a Svelte template, you might use `bind:this` like this:
 
 ```html
 <script>
 	import ProgressBar from 'svelte-progress-bar'
-
-	export let
+	let progress
 </script>
-<ProgressBar {width} />
-
-<script>
-import ProgressBar from 'svelte-progress-bar'
-export default {
-	components: { ProgressBar }
-	// somewhere later: this.setWidthRatio(0.4)
-}
-</script>
+<ProgressBar bind:this={progress} />
+<!-- then somewhere later -->
+<button on:click={() => progress.setWidthRatio(0.4)}>
+	Set to 40% Width
+</button>
 ```
 
 If you were using a web app with a router, or some sort of page change event emitter, it might look like:

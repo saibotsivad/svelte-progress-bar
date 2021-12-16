@@ -1,6 +1,8 @@
 <script>
-	export let width = 10
+	export let currentWidth
 	export let bar
+
+	let width = 10
 
 	const progressStart = () => {
 		bar.start()
@@ -45,5 +47,6 @@
 
 <button class="inline" on:click={() => setWidthRatio(width)}>
 	Set Width
+	(Currently {Math.round(currentWidth * 10000) / 100})
 </button>
 <input class="inline" type="number" bind:value={width}>

@@ -1,23 +1,11 @@
-import Controls from './Controls.svelte'
-import ProgressBar from '../src/ProgressBar.svelte'
+import App from './App.svelte'
 
-const bar = new ProgressBar({
-	target: document.querySelector('body'),
-	props: {
-		// you can either specify the color as a property here, or using CSS
-		color: 'blue'
-	}
-})
-
-// wire up the control buttons
-
-new Controls({
+const app = new App({
 	target: document.querySelector('#controls'),
-	props: { bar }
 })
 
-bar.start()
+app.start()
 
-// setTimeout(() => {
-// 	bar.complete()
-// }, 1000)
+setTimeout(() => {
+	app.complete()
+}, 3000)
