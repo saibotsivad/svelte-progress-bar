@@ -16,7 +16,7 @@ Change categories are:
 
 ## [3.0.0](https://github.com/saibotsivad/svelte-panel-click/compare/v2.0.0..v3.0.0) - 2021-12-16
 ### Changed
-- BREAKING: Updated to use Svelte 3. 🎉 All the documentation and demo are updated as well. Unfortunately, the exported method `continue` had to be renamed, since it's a JS keyword. New name: `animate`. Note also the normal Svelte 2->3 upgrade bullet points: `data` -> `props`, and the get/set has changed. To get at the inner properties, I added an exported `getState` function, you can see it in [the demo `Controls.svelte` file](./docs/Controls.svelte).
+- BREAKING: Updated to use Svelte 3. 🎉 In general everything stayed the same except that the exported method `continue` had to be renamed (use `animate` instead), since it's a JS keyword. Note also the normal Svelte 2->3 upgrade stuff: `data` became `props`, and the get/set has changed. To get at the inner properties, I added an exported `getState` function, you can see it in [the demo `Controls.svelte` file](./docs/Controls.svelte).
 
 ## [2.0.0](https://github.com/saibotsivad/svelte-panel-click/compare/v1.0.2..v2.0.0) - 2018-12-16
 ### Added
