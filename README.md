@@ -10,6 +10,12 @@ You can use it in your plain old web app, without bundling or anything, using th
 	const progress = new ProgressBar({
 		target: document.querySelector('body')
 	})
+	// start it on a page load
+	progress.start()
+	// complete it at some point in the future
+	setTimeout(() => {
+		progress.complete()
+	}, 1000)
 </script>
 ```
 
