@@ -3,27 +3,21 @@
   "version": "2.0.0",
   "description": "A tiny progress bar, inspired by YouTube's loader!",
   "main": "dist/ProgressBar.cjs.js",
-  "module": "dist/ProgressBar.js",
-  "svelte": "ProgressBar.html",
+  "module": "dist/ProgressBar.es.js",
+  "svelte": "src/ProgressBar.html",
+  "umd": "dist/ProgressBar.umd.js",
   "files": [
-    "ProgressBar.html",
-    "dist/ProgressBar.js",
-    "dist/ProgressBar.min.js",
-    "dist/ProgressBar.min.js.map",
-    "dist/ProgressBar.cjs.js",
-    "dist/ProgressBar.es.js"
+    "src",
+    "dist"
   ],
   "scripts": {
-    "test": "node ProgressBar.test.js",
-    "build": "npm run build:docs && npm run build:dist",
-    "build:docs": "rollup --config rollup.config.js docs/app.js --format iife --file docs/build.js",
-    "prebuild:dist": "rm -rf dist && mkdir -p dist",
-    "build:dist": "npm run build:dist:cjs && npm run build:dist:es && npm run build:dist:iife",
-    "build:dist:cjs": "svelte compile --format=cjs ProgressBar.html > dist/ProgressBar.cjs.js",
-    "build:dist:es": "svelte compile --format=es ProgressBar.html > dist/ProgressBar.es.js",
-    "build:dist:iife": "rollup --config rollup.config.js ProgressBar.html --format iife --file dist/ProgressBar.js --name ProgressBar",
-    "postbuild:dist:iife": "./node_modules/.bin/babel dist/ProgressBar.js --presets=@babel/env --out-dir dist",
-    "postbuild:dist": "uglifyjs --compress --source-map=filename --output=dist/ProgressBar.min.js -- dist/ProgressBar.js"
+    "prepublishOnly": "npm run build",
+    "test": "node src/ProgressBar.test.js",
+    "prebuild": "rm -rf dist && mkdir -p dist && rm -f docs/build.js",
+    "build": "rollup -c",
+    "postbuild": "./node_modules/.bin/babel dist/ProgressBar.umd.js --presets=@babel/env --out-dir dist --module-id ProgressBar --minified --no-comments",
+    "dev": "rollup -c -w",
+    "start": "sirv docs --dev"
   },
   "repository": {
     "type": "git",
@@ -34,24 +28,28 @@
     "progress",
     "load"
   ],
-  "author": "saibotsivad",
-  "license": "VOL",
+  "author": {
+    "name": "Tobias Davis",
+    "email": "tobias@davistobias.com",
+    "url": "https://davistobias.com"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
   "bugs": {
     "url": "https://github.com/saibotsivad/svelte-progress-bar/issues"
   },
   "homepage": "https://github.com/saibotsivad/svelte-progress-bar#readme",
   "devDependencies": {
-    "@babel/cli": "^7.2.0",
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.0",
-    "delay": "^4.1.0",
-    "jsdom": "^13.1.0",
+    "@babel/cli": "^7.16.0",
+    "@babel/plugin-transform-modules-umd": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
+    "@rollup/plugin-node-resolve": "^13.1.1",
+    "jsdom": "^19.0.0",
     "register-svelte-require": "0.0.1",
-    "rollup": "^0.67.4",
-    "rollup-plugin-svelte": "^4.4.0",
-    "svelte": "^2.15.3",
-    "svelte-cli": "^3.0.0",
-    "tape": "^4.9.1",
-    "uglify-js": "^3.4.9"
+    "rollup": "^2.61.1",
+    "rollup-plugin-npm-run": "^1.0.2",
+    "rollup-plugin-svelte": "^7.1.0",
+    "sirv-cli": "^1.0.14",
+    "svelte": "^3.44.3",
+    "uvu": "^0.5.2"
   }
 }
