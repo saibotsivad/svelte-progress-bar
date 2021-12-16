@@ -1,0 +1,33 @@
+#
+# This workflow will run all the normal static tests (linting, unit, etc.) and
+# make sure the build completes successfully.
+#
+
+name: test
+
+on:
+  push:
+    branches: [ 'feature/*' ]
+
+jobs:
+  build:
+    environment: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm run test
+    - run: npm run build
+      env:
+        STAGE: local
+        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
