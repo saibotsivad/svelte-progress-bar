@@ -4,7 +4,7 @@
   "description": "A tiny progress bar, inspired by YouTube's loader!",
   "main": "dist/ProgressBar.cjs.js",
   "module": "dist/ProgressBar.es.js",
-  "svelte": "src/ProgressBar.html",
+  "svelte": "src/ProgressBar.svelte",
   "umd": "dist/ProgressBar.umd.js",
   "files": [
     "src",
