@@ -14,6 +14,10 @@ Change categories are:
 * `Fixed` for any bug fixes.
 * `Security` to invite users to upgrade in case of vulnerabilities.
 
+## [3.0.2](https://github.com/saibotsivad/svelte-panel-click/compare/v3.0.1..v3.0.2) - 2022-01-19
+### Fixed
+- The `package.json` Svelte entry pointed at the old `html` file still. 🤦‍♂️ Thanks @bcazur
+
 ## [3.0.0-3.0.1](https://github.com/saibotsivad/svelte-panel-click/compare/v2.0.0..v3.0.1) - 2021-12-16
 ### Added
 - UMD build and added to `package.json` so you can use [unpkg](https://unpkg.com) directly.
