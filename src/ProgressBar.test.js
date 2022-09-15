@@ -37,7 +37,7 @@ test('setting a width does not start auto incrementing', async () => {
 test('calling reset() does not start auto incrementing', async () => {
 	const bar = new ProgressBar({
 		target: document.querySelector('body'),
-		props: { intervalTime: 15 }
+		props: { intervalTime: 15 },
 	})
 	get(bar, 'reset')()
 	await delay(50)
@@ -47,7 +47,7 @@ test('calling reset() does not start auto incrementing', async () => {
 test('calling start() starts auto incrementing', async () => {
 	const bar = new ProgressBar({
 		target: document.querySelector('body'),
-		props: { intervalTime: 15 }
+		props: { intervalTime: 15 },
 	})
 	get(bar, 'start')()
 	const earlyWidth = get(bar, 'width')
@@ -58,7 +58,7 @@ test('calling start() starts auto incrementing', async () => {
 test('calling stop() should pause auto incrementing', async () => {
 	const bar = new ProgressBar({
 		target: document.querySelector('body'),
-		props: { intervalTime: 15 }
+		props: { intervalTime: 15 },
 	})
 	get(bar, 'start')()
 	await delay(50)
@@ -73,8 +73,8 @@ test('auto increment should never reach 100%', async () => {
 		target: document.querySelector('body'),
 		props: {
 			intervalTime: 15,
-			stepSizes: [ 0.7 ]
-		}
+			stepSizes: [ 0.7 ],
+		},
 	})
 	get(bar, 'start')()
 	await delay(75)
@@ -87,8 +87,8 @@ test('when complete() is called the bar goes away', async () => {
 		props: {
 			intervalTime: 15,
 			settleTime: 15,
-			stepSizes: [ 0.7 ]
-		}
+			stepSizes: [ 0.7 ],
+		},
 	})
 	get(bar, 'start')()
 	await delay(75)
@@ -103,7 +103,7 @@ test('when complete() is called the bar goes away', async () => {
 
 test('if color supplied it will be set as style', async () => {
 	const bar = new ProgressBar({
-		target: document.querySelector('body')
+		target: document.querySelector('body'),
 	})
 	assert.equal(get(bar, 'barStyle'), '')
 	assert.equal(get(bar, 'leaderColorStyle'), '')
@@ -111,6 +111,18 @@ test('if color supplied it will be set as style', async () => {
 	await delay(50)
 	assert.equal(get(bar, 'barStyle'), 'background-color: red;')
 	assert.equal(get(bar, 'leaderColorStyle'), 'background-color: red; color: red;')
+})
+
+test('if zIndex supplied it will be set as style', async () => {
+	const bar = new ProgressBar({
+		target: document.querySelector('body'),
+	})
+	assert.equal(get(bar, 'barZIndexStyle'), '')
+	assert.equal(get(bar, 'leaderZIndexStyle'), '')
+	bar.$$set({ zIndex: 210 })
+	await delay(50)
+	assert.equal(get(bar, 'barZIndexStyle'), 'z-index: 210;', 'defined barZIndexStyle')
+	assert.equal(get(bar, 'leaderZIndexStyle'), 'z-index: 211;', 'defined leaderZIndexStyle')
 })
 
 test.run()
