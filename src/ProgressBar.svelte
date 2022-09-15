@@ -15,6 +15,9 @@
 	let updater
 	let completed = false
 
+	// z-index override
+	export let zIndex
+
 	// You'll need to set a color.
 	export let color
 
@@ -110,45 +113,51 @@
 	}
 
 	export let barStyle
-	$: barStyle = (color && `background-color: ${color};` || '') + (width && width * 100 && `width: ${width * 100}%;` || '')
+	$: barStyle = (color && `background-color: ${color};` || '') 
+		+ (width && width * 100 && `width: ${width * 100}%;` || '')
+
+	export let barZIndexStyle
+	$: barZIndexStyle = typeof zIndex !== 'undefined' && `z-index: ${zIndex};` || ''
+
 	// the box shadow of the leader bar uses `color` to set its shadow color
 	export let leaderColorStyle
-	$: leaderColorStyle = color && `background-color: ${color}; color: ${color};` || ''
+	$: leaderColorStyle = (color && `background-color: ${color}; color: ${color};` || '')
+
+	export let leaderZIndexStyle
+	$: leaderZIndexStyle = typeof zIndex !== 'undefined' && `z-index: ${parseInt(zIndex, 10) + 1};` || ''
 </script>
 
-<svelte:head>
-	<style>
-		.svelte-progress-bar {
-			position: fixed;
-			top: 0;
-			left: 0;
-			height: 2px;
-			transition: width 0.21s ease-in-out;
-			z-index: 1;
-		}
-
-		.svelte-progress-bar-hiding {
-			transition: top 0.8s ease;
-			top: -8px;
-		}
-
-		.svelte-progress-bar-leader {
-			position: absolute;
-			top: 0;
-			right: 0;
-			height: 3px;
-			width: 100px;
-			transform: rotate(2.5deg) translate(0px, -4px);
-			box-shadow: 0 0 8px;
-			z-index: 2;
-		}
-	</style>
-</svelte:head>
-
 {#if width}
-	<div class="svelte-progress-bar" class:running class:svelte-progress-bar-hiding={completed} style={barStyle}>
+	<div class="svelte-progress-bar" class:running class:svelte-progress-bar-hiding={completed} style={barStyle}{barZIndexStyle}>
 		{#if running}
-			<div class="svelte-progress-bar-leader" style={leaderColorStyle}></div>
+			<div class="svelte-progress-bar-leader" style={leaderColorStyle}{leaderZIndexStyle}></div>
 		{/if}
 	</div>
 {/if}
+
+<style>
+	:global(.svelte-progress-bar) {
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 2px;
+		transition: width 0.21s ease-in-out;
+		z-index: 1;
+	}
+
+	:global(.svelte-progress-bar-hiding) {
+		transition: top 0.8s ease;
+		top: -8px;
+	}
+
+	:global(.svelte-progress-bar-leader) {
+		position: absolute;
+		top: 0;
+		right: 0;
+		height: 3px;
+		width: 100px;
+		transform: rotate(2.5deg) translate(0px, -4px);
+		box-shadow: 0 0 8px;
+		z-index: 2;
+	}
+</style>

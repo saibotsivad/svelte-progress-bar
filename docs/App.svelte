@@ -9,6 +9,6 @@
 	export const complete = () => bar.complete()
 </script>
 
-<ProgressBar color="blue" bind:this={bar} bind:width />
+<ProgressBar color="blue" zIndex="13" bind:this={bar} bind:width />
 
 <Controls bind:bar currentWidth={width} />
